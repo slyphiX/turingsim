@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JavaScript Turing Machine Simulator</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="resources/tapeview.js"></script>
+        <script type="text/javascript" src="resources/turingsim3.js"></script>
+        <script type="text/javascript" src="resources/uimanager3.js"></script>
+        <link rel="stylesheet" href="resources/layout.css" type="text/css">
+        <link rel="shortcut icon" href="resources/tapedark.png" type="image/png">
+    </head>
+    <body>
+        <div class="container" id="uppercontainer">
+            <div id="statusbar" class="wide">
+                <div class="status left">
+                    <div class="statusvalue" id="state">1</div>
+                    <div class="statusdesc shadow">STATE</div>
+                </div>
+                <div class="status">
+                    <div class="statusvalue" id="pos">0</div>
+                    <div class="statusdesc shadow">POSITION</div>
+                </div>
+                <div class="status">
+                    <div class="statusvalue" id="symbols">0</div>
+                    <div class="statusdesc shadow">SYMBOLS</div>
+                </div>
+                <div class="status right">
+                    <div class="statusvalue" id="transitions">0</div>
+                    <div class="statusdesc shadow">TRANSITIONS</div>
+                </div>
+            </div>
+            
+            <div id="tape" class="wide">
+                <div id="rightindicator" class="indicator"></div>
+                <div id="leftindicator" class="indicator"></div>
+                <div id="focus"></div>
+                <div id="sliderframe">
+                    <div id="slider"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="fulltile">
+            <div id="info">Showing positions <span>0</span> to <span>100</span></div>
+            <div id="options">FOCUS HEAD - Show position <input> CONFIRM</div><!-- float this right-->
+            <div id="fulltape"></div>
+        </div>
+            
+        <div class="container" id="lowercontainer">
+            <div id="programtile" class="shadow narrow sidetile">
+                <div class="heading">Programming</div>
+                
+                <div id="confirmoverlay">
+                    <span id="clear" class="flatbutton">Clear Programming</span><br>
+                    <span id="cancel" class="flatbutton">Cancel</span>
+                </div>
+                
+                <div id="clearprog" class="slidebutton">
+                    Clear Programming
+                </div>
+                
+                <div id="editednote" title="The currently entered program may not match the installed one.">*</div>
+                
+                <div class="wrapper">
+                    <textarea id="program"></textarea>
+                </div>
+            </div>
+            
+            <div id="outputtile" class="shadow narrow sidetile">
+                <div class="heading">Output</div>
+                
+                <div id="clearout" class="slidebutton">
+                    Clear Output Box
+                </div>
+                <div class="wrapper">
+                    <div id="outputscroll">
+                        <div id="output"><p>
+                            Welcome to TMS 3.0 beta!<br>
+                            Any status messages will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="controltile" class="shadow narrow">
+                <div class="heading">Controls</div>
+                
+                <div class="buttonbox"><div class="button" id="start" title="Start"></div><br>Start</div>
+                <div class="buttonbox"><div class="button" id="halt" title="Halt"></div><br>Halt</div>
+                <div class="buttonbox"><div class="button" id="reset" title="Reset"></div><br>Reset</div>
+                <div class="buttonbox"><div class="button" id="step" title="Single Step"></div><br>Step</div>
+                
+                <div id="listbox">
+                    <select id="speed" size="1">
+                        <option>Slow</option>
+                        <option>Moderate</option>
+                        <option selected>Fast</option>
+                        <option>Very Fast</option>
+                    </select>
+                    Speed
+                </div>
+                <div class="buttonbox"><div class="button" id="calc" title="Compute"></div><br>Skip</div>
+            </div>
+            
+            <div id="fullbutton" class="narrow" style="display:none;">Switch TMS TapeViewer BETA on/off</div>
+
+            <div id="setuptile" class="shadow narrow">
+                <div class="heading">Setup</div>
+
+                <div id="initialwrapper">
+                    Initial characters on tape:<br>
+                    <input type="text" id="initialoffset" class="textfield" placeholder="OFFSET" value="0">
+                    <input type="text" id="initial" class="textfield">
+                </div>
+                
+                <div id="installbox">
+                    <div id="install" class="button">
+                        Install program
+                    </div>
+                </div>
+                <div class="buttonbox">
+                    <div id="help" class="button" title="Help">?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TODO UPDATE HELP -->
+        <div id="overlay">
+            <div id="clickanywhere">Click anywhere to exit</div>
+
+            <div id="helpwrapper">
+                <div id="helpbox">
+                    <h1>Turing Simulator Reference</h1>
+                    <h2>Syntax overview</h2>
+                    <p>
+                        The TMS is programmed using transition rules. Each line of the input program
+                        may either be
+                    </p>
+                    <ul>
+                        <li>an empty line,</li>
+                        <li>a comment, denoted by <code>#</code> as the first non-blank character,</li>
+                        <li>a transition rule of the following form:
+                            <p>
+                                <code><span class="red">S,C</span> <span class="green">S,C</span></code> or <br>
+                                <code><span class="red">S,C</span> <span class="green">S,C,D</span></code>, where:
+                            </p>
+                            <p>
+                                <code>S</code> is a state name. State names must be between 1-3 characters in length
+                                and may only contain alphanumeric characters (A-Z, a-z, 0-9). State names are case-insensitive.<br>
+                                <code>C</code> is a single character. All characters except <code>,</code> and
+                                whitespaces are valid. Use <code>_</code> (underscore) as the blank symbol.<br>
+                                <code>D</code> is a direction. This may either be <code>&gt;</code> (right),
+                                <code>&lt;</code> (left) or <code>_</code> (no direction). This is optional
+                                and will default to no direction if not set.<br>
+                            </p>
+                            <p>
+                                The first part of the transition rule (<span class="red">red</span>) is the condition part.
+                                The rule will be applied if and only if the turing machine is currently in the specified state and
+                                the specified character is read at the current position of the tape.
+                            </p>
+                            <p>
+                                The second part (<span class="green">green</span>) is the execution part. The turing machine
+                                will transition into the specified state, write the specified character to the current position and move
+                                the current position indicator in the specified direction.
+                            </p>
+                            <p>
+                                Condition and execution part are seperated by one or more spaces.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The machine will always start in state <code>1</code> (initial state) and halts if it transitions into state <code>H</code> (halt state).<br>
+                        Leading zeroes in state names will be ignored (<code>005</code> is equal to <code>5</code>).<br>
+                        The tape will always be pre-filled with blank symbols.
+                    </p>
+                    <h2>Control overview</h2>
+                    <p>
+                        <b>Start:</b> Starts automatic step-by-step execution. Speed is set by the corresponding
+                        dropdown selection list and may be changed freely during runtime.<br>
+                        <b>Halt:</b> Halts automatic step-by-step execution.<br>
+                        <b>Reset:</b> Resets the machine to initial state.<br>
+                        <b>Step:</b> Performs a single transition.<br>
+                        <b>Skip:</b> Attempts to execute the full program immediately until either the halt state
+                        is reached or an error occurs.<br>
+                        <b>Install program:</b> Installs the currently entered program, outputting any errors it encounters
+                        during compilation. If compilation succeeds, any characters in the corresponding text field will be
+                        written to the tape starting at position 0.
+                    </p>
+                    <h2>Error reference</h2>
+                    <h3>No applicable transition found</h3>
+                        <p>Occurs during runtime when no transition is defined for the current state and symbol. Check if any transition rule
+                        is missing or if the current constellation should not have been reached in the first place.</p>
+                    <h3>Syntax error</h3>
+                        <p>Occurs when a transition rule does not satisfy the above syntax rules. Check the specified line for typos
+                        or differences to the syntax explained above.</p>
+                    <h3>Trying to override existing state transition</h3>
+                        <p>Occurs when a transition rule for given state-character constellation has already previously been defined.
+                        This is supposed to prevent ambiguity and unintended behavior. Check the specified line and the lines above it
+                        for any multiple definitions.</p>
+                    <h3>Attempting to override halt state</h3>
+                        <p>Similar to above. Occurs when a transition rule tries to specify any actions for state <code>H</code>. <code>H</code>
+                        denotes the halt state and is therefore already defined. Remove any rules for state <code>H</code> or
+                        rename the affected state if this was unintended. Note that since state names are case-insensitive,
+                        <code>H</code> and <code>h</code> describe the same state.</p>
+                    <h3>Potential call to undefined state</h3>
+                        <p>Occurs when a transition rule tries to define a transition into an undefined state. Check if any
+                        transition rules for the state to be transitioned into exist or try changing the rule in the specified line to
+                        transition into the halt state, then run the program to look for any unintended behavior during execution.</p>
+                    <h3>No transition rules found for initial state '1'</h3>
+                        <p>Occurs when no transition rule is found for state <code>1</code>. Since state <code>1</code> is the
+                        initial state of the machine nothing will be executed if no transition rules are set for state <code>1</code>.</p>
+                    <h3>Computation time limit exceeded</h3>
+                        <p>Occurs if instant computation using the skip button takes too long to complete. This may be caused by an
+                        infinite loop or simply a calculation taking too long to complete in one run. Execution may be continued from this point at any time.</p>
+                    <h3>Machine not programmed</h3>
+                        <p>Occurs when no valid program has yet been installed. Remember to use the corresponding button to install your
+                        program after entering it.</p>
+                </div>
+            </div>
+        </div>
+        <div id="corner">&copy; jh 2016 &lt;:8)~~</div>
+    </body>
+</html>

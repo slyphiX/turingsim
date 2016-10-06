@@ -1,0 +1,724 @@
+
+/*
+ * TMS stylesheet
+ * (c) 2016 jh
+ *
+ * DEFAULT THEME COLORS
+ *   light: # CFD4D6
+ *   dark: # 45545E
+ *   accent: # 2A2A35
+ *   active indicator: # 9E313A
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+    background-color: transparent;
+}
+
+/* prevent collapsing margins */
+html, body {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+#corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px;
+    color: #263238;
+    font-size: 8px;
+    text-align: right;
+}
+
+.container {
+    position: relative;
+    width: 900px;
+    margin: 15px auto 10px;
+}
+#uppercontainer {
+    margin-bottom: 25px;
+}
+#lowercontainer {
+    margin-top: 25px;
+    margin-bottom: 0;
+}
+
+.wide {
+    width: 100%;
+}
+.narrow {
+    width: 30%;
+}
+.shadow {
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4);
+}
+
+#statusbar {
+    height: 40px;
+}
+.status {
+    box-sizing: border-box;
+    float: left;
+    width: 25%;
+    height: 40px;
+    padding: 0 5px;
+    font-weight: bold;
+    line-height: 40px;
+}
+.status.left {
+    padding-left: 0;
+}
+.status.right {
+    padding-right: 0;
+}
+.statusvalue {
+    float: right;
+    width: 40px;
+    height: 40px;
+    background-color: #45545E;
+    box-shadow: 1px 0 1px rgba(0, 0, 0, 0.4), -1px 0 1px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    font-size: 30px;
+}
+.statusdesc {
+    box-sizing: border-box;
+    width: 100%;
+    padding-left: 8px;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 23px;
+    background-color: #CFD4D6;
+}
+
+#tape {
+    margin-top: 50px;
+    position: relative;
+    height: 50px;
+    background-color: #CFD4D6;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    overflow: hidden;
+}
+
+#sliderframe {
+    position: absolute;
+    top: 0;
+    left: -100px;
+    right: -100px;
+    bottom: 0;
+    margin: auto;
+}
+
+@keyframes right {
+    from { left: 40px; }
+    to { left: 0; }
+}
+
+@keyframes left {
+    from { left: -40px; }
+    to { left: 0; }
+}
+
+#slider {
+    position: relative;
+    left: 0;
+    margin: 4px auto;
+    padding: 0;
+    height: 42px;
+    width: 40px;
+    text-align: center;
+    white-space: nowrap;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+    animation-timing-function: linear;
+}
+#slider.left {
+    animation-name: left;
+}
+#slider.right {
+    animation-name: right;
+}
+
+#focus {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    width: 40px;
+    border: 5px solid #c62222;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 2px 0 1px rgba(0, 0, 0, 0.4), -2px 0 1px rgba(0, 0, 0, 0.4), 1px 1px 1px rgba(0, 0, 0, 0.4) inset, -1px -1px 1px rgba(0, 0, 0, 0.4) inset;
+    z-index: 15;
+}
+
+.value {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    margin: 3px 2px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 36px;
+    background-color: #2A2A35;
+    border-radius: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.indicator {
+    position: relative;
+    height: 100%;
+    width: 40px;
+    background: #45545E no-repeat scroll;
+    background-position: center center;
+    box-shadow: 2px 0 1px rgba(0, 0, 0, 0.4), -2px 0 1px rgba(0, 0, 0, 0.4);
+    z-index: 15;
+    transition: background-color 0.2s, background-position 0.2s;
+}
+.indicator.active {
+    background-color: #9E313A;
+}
+
+#rightindicator {
+    float: right;
+    background-image: url(rightarr.png);
+}
+#leftindicator {
+    float: left;
+    background-image: url(leftarr.png);
+}
+
+.heading {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: #2A2A35;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+}
+
+.slidebutton {
+    position: relative;
+    top: -30px;
+    padding: 1px;
+    padding-top: 4px;
+    margin: auto;
+    width: 170px;
+    min-width: 100px;
+    height: 22px;
+    background-color: #45545E;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    z-index: 5;
+    transition: top 1s;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    transition: background-color 0.2s, top 0.2s;
+}
+.slidebutton.down {
+    top: -3px;
+}
+.slidebutton:hover {
+    background-color: #2A2A35;
+}
+
+#confirmoverlay {
+    position: absolute;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: 150px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 7;
+    opacity: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s step-end;
+}
+#confirmoverlay.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s, visibility 0.2s step-start;
+}
+
+.flatbutton {
+    cursor: pointer;
+    padding: 4px 10px;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 30px;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.2s;
+}
+.flatbutton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.wrapper {
+    position: absolute;
+    height: auto;
+    width: auto;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 5px;
+    margin-top: 7px;
+}
+
+.sidetile {
+    min-height: 430px;
+    height: 550px;
+}
+
+#programtile {
+    position: relative;
+    float: left;
+    background-color: #CFD4D6;
+}
+
+#program {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 10px;
+    padding-top: 20px;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    border: none;
+    overflow: auto;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3) inset;
+    font-family: Liberation Mono, monospace;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#editednote {
+    position: absolute;
+    bottom: 50px;
+    right: 0;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    height: 25px;
+    width: 25px;
+    background-color: rgba(0, 0, 0, 0.8);
+    font-weight: bold;
+    font-size: 32px;
+    text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    overflow: hidden;
+    cursor: help;
+    z-index: 5;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s, visibility 0.2s step-end;
+}
+#editednote.shown {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s, visibility 0.2s step-start;
+}
+
+#outputtile {
+    position: relative;
+    background-color: #CFD4D6;
+    float: right;
+}
+
+#output {
+    position: absolute;
+    box-sizing: border-box;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+#output p {
+    margin: 10px 0;
+    font-weight: bold;
+    font-size: 11px;
+    line-height: 12px;
+}
+
+#output p.em {
+    color: rgb(255, 180, 20);
+}
+
+#outputscroll {
+    position: relative;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top: 3px solid #2A2A35;
+    border-bottom: 3px solid #2A2A35;
+}
+
+#controltile {
+    margin: auto;
+    height: 205px;
+    background-color: #CFD4D6;
+}
+
+.buttonbox {
+    float: left;
+    width: 25%;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.button {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+    border-radius: 5px;
+    font-size: 25px;
+    line-height: 40px;
+    font-weight: bold;
+    text-align: center;
+    background: none #45545E no-repeat scroll center;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s, background-color 0.2s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+}
+.button:hover {
+    box-shadow: 2px 2px 4px 4px rgba(0, 0, 0, 0.3);
+    background-color: #2A2A35;
+}
+.button.inactive {
+    /* one day... */
+}
+
+#start {
+    background-image: url(start.png);
+}
+#halt {
+    background-image: url(pause.png);
+}
+#reset {
+    background-image: url(reset.png);
+}
+#step {
+    background-image: url(step.png);
+}
+
+#listbox {
+    float: left;
+    width: 75%;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#speed {
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 5px;
+    margin: 0;
+    margin-bottom: 5px;
+    width: 90%;
+    height: 40px;
+    font-weight: bold;
+    font-size: 18px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    color: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-bottom: 3px solid #45545E;
+    border-radius: 5px;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 50, 0.1);
+    background-image: url(arrdown.png);
+    background-repeat: no-repeat;
+    background-position: 97% center;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+#speed:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#speed option {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#calc {
+    background-image: url(skip.png);
+}
+
+#setuptile {
+    margin: auto;
+    margin-top: 25px;
+    position: relative;
+    height: 170px;
+    background-color: #CFD4D6;
+}
+
+#initialwrapper {
+    box-sizing: border-box;
+    top: 40px;
+    left: 0;
+    right: 0;
+    margin: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.7);
+}
+#initial {
+    width: 68%;
+}
+#initialoffset {
+    width: 30%;
+    float: right;
+    text-align: right;
+}
+.textfield {
+    box-sizing: border-box;
+    height: 30px;
+    margin: 0;
+    margin-top: 3px;
+    padding: 5px;
+    resize: none;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3) inset;
+    font-weight: bold;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#installbox {
+    float: left;
+    width: 75%;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#install {
+    width: auto;
+    height: 40px;
+    padding-left: 35px;
+    padding-right: 10px;
+    line-height: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    background-image: url(dl.png);
+    background-repeat: no-repeat;
+    background-position: 0 center;
+}
+
+#fullbutton {
+    box-sizing: border-box;
+    margin: auto;
+    height: 25px;
+    margin: auto;
+    margin-top: 5px;
+    padding: 2px;
+    padding-left: 30px;
+    text-align: left;
+    line-height: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    background-color: #45545E;
+    background-image: url(tape.png);
+    background-position: center left;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.1s, box-shadow 0.1s;
+}
+#fullbutton:hover {
+    background-color: #2A2A35;
+}
+
+#fulltile {
+    width: 100%;
+    height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 3px 2px rgba(0, 0, 0, 0.5) inset, 0 -3px 2px rgba(0, 0, 0, 0.5) inset;
+    transition: height 0.2s linear, margin-top 0.2s linear;
+}
+#fulltile.shown {
+    height: 150px;
+    overflow-x: auto;
+}
+#options {
+    margin: 2px;
+    
+    /* TODO format this */
+}
+#fulltape {
+    width: 100%;
+}
+
+#fullslider {
+    margin: 10px auto;
+    padding: 0 2px;
+    height: 42px;
+    width: 900px;
+    text-align: center;
+    white-space: nowrap;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.4);
+}
+.valueframe {
+    display: inline-block;
+    margin-bottom: 2px;
+    padding-bottom: 1px;
+    border-radius: 2px;
+}
+.valueframe.currentpos {
+    background-color: rgba(220, 40, 40, 0.8);
+}
+.number {
+    margin: 0 1px;
+    border-radius: 0 0 2px 2px;
+    font-size: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+
+#helpwrapper {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 100px;
+    width: 900px;
+    height: 100%;
+    overflow: hidden;
+    transition: padding-top 0.5s;
+}
+#helpwrapper.up {
+    padding-top: 20px;
+}
+
+#helpbox {
+    padding-left: 5px;
+    padding-right: 45px;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    line-height: 21px;
+    overflow: auto;
+}
+
+#helpbox * {
+    cursor: default;
+}
+
+#helpbox h1 {
+    font-size: 30px;
+    margin: 20px 0;
+}
+#helpbox h2 {
+    font-size: 25px;
+    margin: 20px 5px;
+}
+#helpbox h3 {
+    font-size: 20px;
+    margin: 10px;
+}
+#helpbox code {
+    color: rgba(255, 255, 255, 0.9);
+    font-family: Liberation Mono, monospace;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+#helpbox p {
+    position: relative;
+    margin: 10px 0;
+    margin-left: 20px;
+    z-index: 3;
+}
+#helpbox ul {
+    list-style-image: url(bul.png);
+    margin: 10px 30px;
+}
+
+.red {
+    font-size: inherit;
+    font-family: inherit;
+    color: #ee4444;
+}
+.green {
+    font-size: inherit;
+    font-family: inherit;
+    color: #44ee44;
+}
+
+#clickanywhere {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 20px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    color: rgba(220, 220, 220, 0.9);
+    background-color: rgba(0, 0, 0, 0.95);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s linear, visibility 0.2s step-end;
+    z-index: 100;
+}
+#overlay.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s linear, visibility 0.2s step-start;
+}
+
