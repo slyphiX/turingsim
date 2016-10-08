@@ -14,7 +14,7 @@ class TapeView {
         this.active = false;
         this.focusHead = true;
         this.focus = 0;
-        this.maxdst = 20; // TODO set this to 100
+        this.maxdst = 20; // TODO let user decide
         
         var self = this;
         
