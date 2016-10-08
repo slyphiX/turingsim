@@ -5,8 +5,12 @@
  * (c) 2016 jh
  */
 
-onerror = function (m, f, l) {
-    alert(m + "\nFile: " + f + "\nLine: " + l);
+//onerror = function (m, f, l) {
+//    alert(m + "\nFile: " + f + "\nLine: " + l);
+//};
+
+onerror = function(m) {
+    alert("ERROR: " + m + "\nReload the page to reset.");
 };
 
 addEventListener("load", function() {
@@ -18,7 +22,7 @@ addEventListener("load", function() {
     var TAPE = [];
     var LOG_LENGTH_THRESHOLD = 8;
     
-    var DELAYS = [2000, 700, 300, 50];
+    var DELAYS = [2000, 1000, 500, 300, 50];
     
     /* DOM ELEMENTS */
     
@@ -46,9 +50,12 @@ addEventListener("load", function() {
     var PROGRAMMING_STARTED = "Programming started...";
     var PROGRAMMING_EMPTY = "No programming entered!";
     var START_SUCCESS = "Machine started...";
-    var HALT_SUCCESS = "Machine halted:\nUser interrupt.";
     var RESET_SUCCESS = "Reset successful.";
-    var STATE_HALT = "Machine halted:\nHalt state reached.";
+    var COMPUTE_SUCCESS = "Computation started...";
+    var HALT = "Machine halted: ";
+    var HALT_INTERRUPT = HALT + "User interrupt.";
+    var HALT_STATE = HALT + "Halt state reached.";
+    var HALT_TIMEOUT = HALT + "Computation time limit exceeded.";
     
     /* METHODS */
         
@@ -59,6 +66,7 @@ addEventListener("load", function() {
         slidebutton.addEventListener("click", function() {
             confirmoverlay.className = "visible";
         });
+        // TODO MAYBE CHANGE OVERLAY FADE-OUT TO ANIMATION (NOT TRANSITION)!
         document.getElementById("clear").addEventListener("click", clearProgram);
         document.getElementById("cancel").addEventListener("click", function() {
             confirmoverlay.className = "";
@@ -88,10 +96,11 @@ addEventListener("load", function() {
         document.getElementById("calc").addEventListener("click", skip);
         
         TMS.addEventListener("uiupdate", updateUI);
-        TMS.addEventListener("haltstate", haltstate);
-        TMS.addEventListener("runtimeerror", function(e) {
-            message("Machine halted: " + e.detail.message);
-        });
+        TMS.addEventListener("haltstate", () => message(HALT_STATE + "\n" + info()));
+        TMS.addEventListener("runtimeerror", event => message(HALT + event.detail.message));
+        TMS.addEventListener("skipdone", () => message("Computation successful."));
+        TMS.addEventListener("skiptimeout", () => message(HALT_TIMEOUT + "\n" + info()));
+        TMS.addEventListener("skipinterrupt", () => message(HALT_INTERRUPT + "\n" + info()));
         
         TMS.delay = DELAYS[speedlist.selectedIndex];
         
@@ -150,6 +159,7 @@ addEventListener("load", function() {
         try {
             slider.className = "";
             TMS.start();
+            message(START_SUCCESS);
         } catch (e) {
             message("ERROR: " + e.message);
         }
@@ -157,8 +167,9 @@ addEventListener("load", function() {
     
     function halt() {
         try {
-            TMS.halt();
-            message(HALT_SUCCESS + "\n" + info());
+            var success = TMS.halt();
+            if (success)
+                message(HALT_INTERRUPT + "\n" + info());
         } catch (e) {
             message("ERROR: " + e.message);
         }
@@ -183,18 +194,14 @@ addEventListener("load", function() {
     }
     
     function skip() {
-        message("Sorry, this feature has not been implemented yet.", true);
-        /*try {
+        try {
             TMS.compute();
+            message(COMPUTE_SUCCESS);
         } catch (e) {
             message("ERROR: " + e.message);
-        }*/
+        }
     }
     
-    function haltstate() {
-        message(STATE_HALT + "\n" + info());
-    }
-
     /* HELPER METHODS */
     
     function message(string, highlight) {
@@ -218,7 +225,7 @@ addEventListener("load", function() {
         return TMS.transitions + " total transitions,\n" + TMS.symbols + " non-blank symbols on tape.";
     }
     
-    function fontSize(len) { return 1/(len + 2) * 3 * 30 + "px"; }
+    var fontSize = len => 3/(len + 2) * 30 + "px";
     function setStatusBar(id, num) {
         var elem = document.getElementById(id);
         var str = String(num);
@@ -251,8 +258,9 @@ addEventListener("load", function() {
     }
     
     var lastInstalled = "";
-    // I have a dream that one day this expression will be rewritten as a lambda function...
-    function clean(input) { return input.replace(/ *$|^ */gm, "").replace(/ +/g, " "); }
+    // I had a dream that one day this expression would be rewritten as a lambda function...
+    var clean = input => input.replace(/ *$|^ */gm, "").replace(/ +/g, " ")
+                              .replace(/\n+/g, "\n").replace(/^\n*/, "").replace(/\n*$/, "");
     function updateProgramSlide() {
         setClass(edited, "shown", clean(lastInstalled) !== clean(program.value));
         setClass(slidebutton, "down", program.value !== "");

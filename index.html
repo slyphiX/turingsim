@@ -42,8 +42,14 @@
         </div>
         
         <div id="fulltile">
-            <div id="info">Showing positions <span>0</span> to <span>100</span></div>
-            <div id="options">FOCUS HEAD - Show position <input> CONFIRM</div><!-- float this right-->
+            <div id="fulltilewrapper">
+                <div id="fulltileinfo" class="fulltilebox">
+                    Showing positions <span id="from">0</span> to <span id="to">100</span>
+                </div>
+                <div id="fulltileconfig" class="fulltilebox">
+                    Center on <input type="text" id="fulltapepos" placeholder="[TMS HEAD]"> <span class="fulltilebutton">CONFIRM</span>
+                </div>
+            </div>
             <div id="fulltape"></div>
         </div>
             
@@ -93,6 +99,7 @@
                 
                 <div id="listbox">
                     <select id="speed" size="1">
+                        <option>Very Slow</option>
                         <option>Slow</option>
                         <option>Moderate</option>
                         <option selected>Fast</option>
@@ -103,7 +110,7 @@
                 <div class="buttonbox"><div class="button" id="calc" title="Compute"></div><br>Skip</div>
             </div>
             
-            <div id="fullbutton" class="narrow" style="display:none;">Switch TMS TapeViewer BETA on/off</div>
+            <div id="fullbutton" class="narrow">Switch TMS TapeViewer BETA on/off</div>
 
             <div id="setuptile" class="shadow narrow">
                 <div class="heading">Setup</div>
@@ -125,7 +132,6 @@
             </div>
         </div>
 
-        <!-- TODO UPDATE HELP -->
         <div id="overlay">
             <div id="clickanywhere">Click anywhere to exit</div>
 
@@ -147,7 +153,7 @@
                             </p>
                             <p>
                                 <code>S</code> is a state name. State names must be between 1-3 characters in length
-                                and may only contain alphanumeric characters (A-Z, a-z, 0-9). State names are case-insensitive.<br>
+                                and may only contain alphanumeric characters (A-Z, a-z, 0-9). State names are case-sensitive.<br>
                                 <code>C</code> is a single character. All characters except <code>,</code> and
                                 whitespaces are valid. Use <code>_</code> (underscore) as the blank symbol.<br>
                                 <code>D</code> is a direction. This may either be <code>&gt;</code> (right),
@@ -185,7 +191,7 @@
                         is reached or an error occurs.<br>
                         <b>Install program:</b> Installs the currently entered program, outputting any errors it encounters
                         during compilation. If compilation succeeds, any characters in the corresponding text field will be
-                        written to the tape starting at position 0.
+                        written to the tape starting at the position specified in the offset field (defaults to 0).
                     </p>
                     <h2>Error reference</h2>
                     <h3>No applicable transition found</h3>
@@ -201,13 +207,13 @@
                     <h3>Attempting to override halt state</h3>
                         <p>Similar to above. Occurs when a transition rule tries to specify any actions for state <code>H</code>. <code>H</code>
                         denotes the halt state and is therefore already defined. Remove any rules for state <code>H</code> or
-                        rename the affected state if this was unintended. Note that since state names are case-insensitive,
-                        <code>H</code> and <code>h</code> describe the same state.</p>
+                        rename the affected state if this was unintended. Note that since state names are case-sensitive,
+                        <code>H</code> and <code>h</code> describe describe different states.</p>
                     <h3>Potential call to undefined state</h3>
                         <p>Occurs when a transition rule tries to define a transition into an undefined state. Check if any
                         transition rules for the state to be transitioned into exist or try changing the rule in the specified line to
                         transition into the halt state, then run the program to look for any unintended behavior during execution.</p>
-                    <h3>No transition rules found for initial state '1'</h3>
+                    <h3>No transition rules found for initial state</h3>
                         <p>Occurs when no transition rule is found for state <code>1</code>. Since state <code>1</code> is the
                         initial state of the machine nothing will be executed if no transition rules are set for state <code>1</code>.</p>
                     <h3>Computation time limit exceeded</h3>

@@ -7,20 +7,32 @@
  * (c) 2016 jh
  */
 
-function TuringControlError(id, info) {
-    this.id = id || -1;
-    this.info = info || {};
-    this.message = this.format(this.DEFAULT_ERRORS[id]);
+class TuringControlError extends Error {
+    constructor(id, info) {
+        super();
+        this.id = id || -1;
+        this.info = info || {};
+        this.message = this.format(this.DEFAULT_ERRORS[id]);
+    }
+    
+    format(str) {
+        for (let k in this.info)
+            str = str.replace("{" + k + "}", this.info[k]);
+        return str;
+    }
+    
+    export() {
+        var self = this;
+        return {
+            id: self.id,
+            info: self.info
+        };
+    }
+    
+    static recreate(backup) {
+        return new TuringControlError(backup.id, backup.info);
+    }
 }
-TuringControlError.prototype = Object.create(Error.prototype);
-TuringControlError.prototype.name = "TuringControlError";
-TuringControlError.prototype.format = function(str) {
-    var info = this.info;
-    Object.keys(info).forEach(function(k) {
-        str = str.replace("{" + k + "}", info[k]);
-    });
-    return str;
-};
 TuringControlError.prototype.DEFAULT_ERRORS = {
     1: "Cannot install program while running!",
     2: "Syntax error in line {line}.",
@@ -38,15 +50,34 @@ TuringControlError.prototype.DEFAULT_ERRORS = {
     14: "Invalid offset specified."
 };
 
+class TuringControlMessage {
+    constructor(type, info) {
+        this.type = type;
+        if (info) {
+            this.status = info.status || null;
+            this.error = info.error || null;
+        }
+    }
+}
+
 function TuringControl() {
     if (!(this instanceof TuringControl))
         return new TuringControl();
     
-    // runtime information
-    this.state, this.position;
-    // stats
-    // TODO implement start/end
-    this.transitions, this.symbols, this.lastDirection, this.tapeStart, this.tapeEnd;
+    // internal
+    this.programming;
+    this.initialTape = "", this.initialOffset = 0;
+    // step delay
+    this.delay;
+    this.timeout;
+    // pseudo-consts
+    this.HALT_STATE = "H";
+    this.INIT_STATE = "1";
+    this.BLANK_SYMBOL = "_";
+    this.DEFAULT_TIMEOUT = 5000;
+    // async worker (init on use)
+    this.skipworker = null;
+    
     // listeners
     this.listeners = {};
     // events
@@ -56,41 +87,28 @@ function TuringControl() {
         skipdone: new Event("skipdone"),
         skipinterrupt: new Event("skipinterrupt"),
         skiptimeout: new Event("skiptimeout")
-    };
-    // dynamic events: runtimeerror (stores error info)
-    
-    // internals
-    this.programming;
-    this.initialTape = "", this.initialOffset = 0;
-    this.ltape, this.rtape;
-    // state
-    this.running, this.skipping, this.haltState;
-    // step delay
-    this.delay;
-    this.timeout;
-    // pseudo-consts
-    this.HALT_STATE = "H";
-    this.INIT_STATE = "1";
-    this.BLANK_SYMBOL = "_";
-    this.DEFAULT_TIMEOUT = 10000;
-    // async worker (init on first use)
-    this.skipworker = null;
+    }; // runtimeerror (dynamic event)
     
     this.defaults();
 };
 
 TuringControl.prototype = {
     defaults: function() {
+        // runtime info
         this.state = this.INIT_STATE;
         this.position = 0;
+        // stats
+        // TODO implement start/end
         this.transitions = 0;
         this.symbols = this.initialTape.replace(/ /g, "").length;
         this.lastDirection = this.DIRECTION_NONE;
         this.tapeStart = 0;
         this.tapeEnd = 0;
+        // state
         this.running = false;
         this.skipping = false;
         this.haltState = false;
+        // internal
         this.ltape = [], this.rtape = [];
         
         var ofst = this.initialOffset, str = this.initialTape;
@@ -143,20 +161,19 @@ TuringControl.prototype = {
                 self.haltState = true;
             }
         }
-        schedule();
+        setTimeout(schedule, 0);
     },
     
     halt: function() {
         this.needs({ running: true });
         if (this.skipping) {
-            // TODO terminate properly and receive state
-            this.skipworker.terminate();
-            this.skipworker = null;
-            this.skipping = false;
+            this.skipworker.postMessage(new TuringControlMessage("stop"));
         } else {
             clearTimeout(this.timeout);
+            this.running = false;
+            return true;
         }
-        this.running = false;
+        return false;
     },
     
     reset: function() {
@@ -170,9 +187,8 @@ TuringControl.prototype = {
         this.dispatchEvent(this.events.uiupdate);
     },
     
-    compute: function(timeout) {
+    compute: function() {
         this.needs({ programmed: true, running: false, haltstate: false });
-        timeout = timeout || this.DEFAULT_TIMEOUT;
         
         if (!Worker)
             throw new TuringControlError(12);
@@ -180,23 +196,34 @@ TuringControl.prototype = {
         if (!this.skipworker) {
             var self = this;
             this.skipworker = new Worker("resources/calculation.js");
+            
             this.skipworker.addEventListener("message", function(e) {
-                var msg = JSON.parse(e.data);
-                self.import(msg);
+                // alert(JSON.stringify(e.data));
+                var msg = e.data;
+                self.import(msg.status);
                 self.skipping = false;
                 self.running = false;
                 self.dispatchEvent(self.events.uiupdate);
                 
-                if (msg.status === "error") {
-                    var event = new CustomEvent("runtimeerror", {
-                        detail: msg.error
-                    });
-                    self.dispatchEvent(event);
-                    self.haltState = true;
-                } else {
-                    self.dispatchEvent(self.events.skipdone);
-                    self.dispatchEvent(self.events.haltstate);
-                    self.haltState = true;
+                switch (msg.type) {
+                    case "error":
+                        var event = new CustomEvent("runtimeerror", {
+                            detail: TuringControlError.recreate(msg.error)
+                        });
+                        self.dispatchEvent(event);
+                        self.haltState = true;
+                        break;
+                    case "interrupt":
+                        self.dispatchEvent(self.events.skipinterrupt);
+                        break;
+                    case "done":
+                        self.dispatchEvent(self.events.skipdone);
+                        self.dispatchEvent(self.events.haltstate);
+                        self.haltState = true;
+                        break;
+                    case "timeout":
+                        self.dispatchEvent(self.events.skiptimeout);
+                        break;
                 }
                 self.skipworker = null;
             });
@@ -204,7 +231,9 @@ TuringControl.prototype = {
         
         this.running = true;
         this.skipping = true;
-        this.skipworker.postMessage(JSON.stringify(this.export()));
+        this.skipworker.postMessage(new TuringControlMessage("start", {
+            status: this.export(true)
+        }));
     },
     
     init: function(program, initial, offset) {
@@ -235,9 +264,9 @@ TuringControl.prototype = {
             if (!match)
                 throw new TuringControlError(2, { line: l + 1 });
             
-            var state = match[1].replace(/^0{0,2}/, "").toUpperCase(); // leading zeroes
+            var state = match[1].replace(/^0{0,2}/, ""); // leading zeroes
             var char = match[2];
-            var targetState = match[3].replace(/^0{0,2}/, "").toUpperCase();
+            var targetState = match[3].replace(/^0{0,2}/, "");
             var newChar = match[4];
             var dirChar = match[5] || "_";
             var direction = (dirChar === ">") ? this.DIRECTION_RIGHT :
@@ -302,7 +331,7 @@ TuringControl.prototype = {
             });
             this.lastDirection = this.DIRECTION_NONE;
             this.dispatchEvent(event);
-            return;
+            return false;
         }
         
         var newChar = targetState.char;
@@ -322,24 +351,25 @@ TuringControl.prototype = {
             this.haltState = true;
             this.dispatchEvent(this.events.haltstate);
         }
+        return true;
     },
     
     // export/import
-    export: function() {
+    export: function(env) {
         var ex = Object.create(null);
-        for (var k of this.EXPORT_LIST)
+        for (let k of this.STATE_LIST)
             ex[k] = this[k];
-        for (var k of this.INFO_LIST)
-            ex[k] = this[k];
+        if (env)
+            for (let k of this.ENV_LIST)
+                ex[k] = this[k];
         return ex;
     },
-    import: function(im) {
-        for (var k of this.EXPORT_LIST)
+    import: function(im, env) {
+        for (let k of this.STATE_LIST)
             this[k] = im[k];
-    },
-    importInfo: function(info) {
-        for (var k of this.INFO_LIST)
-            this[k] = info[k];
+        if (env)
+            for (let k of this.ENV_LIST)
+                this[k] = im[k];
     },
     
     // event handling
@@ -367,9 +397,10 @@ TuringControl.prototype = {
     }
     
 };
-TuringControl.prototype.EXPORT_LIST = ["state", "position", "transitions", "symbols", "lastDirection",
-    "tapeStart", "tapeEnd", "ltape", "rtape"];
-TuringControl.prototype.INFO_LIST = ["programming", "HALT_STATE", "INIT_STATE", "BLANK_SYMBOL", "DEFAULT_TIMEOUT"];
+TuringControl.prototype.STATE_LIST =
+        ["state", "position", "transitions", "symbols", "lastDirection", "tapeStart", "tapeEnd", "ltape", "rtape"];
+TuringControl.prototype.ENV_LIST =
+        ["programming", "initialTape", "initialOffset", "HALT_STATE", "INIT_STATE", "BLANK_SYMBOL", "DEFAULT_TIMEOUT"];
 TuringControl.prototype.DIRECTION_LEFT = -1;
 TuringControl.prototype.DIRECTION_NONE = 0;
 TuringControl.prototype.DIRECTION_RIGHT = 1;
