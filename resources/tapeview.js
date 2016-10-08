@@ -14,7 +14,7 @@ class TapeView {
         this.active = false;
         this.focusHead = true;
         this.focus = 0;
-        this.maxdst = 5; // TODO set this to 100
+        this.maxdst = 10; // TODO set this to 100
         
         var self = this;
         
@@ -56,9 +56,9 @@ class TapeView {
         for (var i = leftbound; i <= rightbound; i++) {
             var index = i.toString();
             if (i > 0 && index.length > 5)
-                index = "*" + index.substring(index.length - 5);
+                index = "'" + index.substring(index.length - 5);
             if (i < 0 && index.length > 5)
-                index = "-*" + index.substring(index.length - 4);
+                index = "-'" + index.substring(index.length - 4);
             slider.appendChild(this.createNode(index, this.control.getTape(index)));
         }
         this.root.appendChild(slider);
