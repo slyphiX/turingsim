@@ -10,7 +10,7 @@
 //};
 
 onerror = function(m) {
-    alert("ERROR: " + m + "\nReload the page to reset.");
+    alert("AN ERROR OCCURRED:\n" + m + "\nReload the page to reset.");
 };
 
 addEventListener("load", function() {
@@ -30,7 +30,6 @@ addEventListener("load", function() {
     var slidebuttonout = document.getElementById("clearout");
     var edited = document.getElementById("editednote");
     var overlay = document.getElementById("overlay");
-    var helpwrapper = document.getElementById("helpwrapper");
     var program = document.getElementById("program");
     var output = document.getElementById("output");
     var confirmoverlay = document.getElementById("confirmoverlay");
@@ -66,7 +65,6 @@ addEventListener("load", function() {
         slidebutton.addEventListener("click", function() {
             confirmoverlay.className = "visible";
         });
-        // TODO MAYBE CHANGE OVERLAY FADE-OUT TO ANIMATION (NOT TRANSITION)!
         document.getElementById("clear").addEventListener("click", clearProgram);
         document.getElementById("cancel").addEventListener("click", function() {
             confirmoverlay.className = "";
@@ -81,11 +79,6 @@ addEventListener("load", function() {
         
         slider.addEventListener("animationend", function() {
             slider.className = "";
-        });
-        
-        document.getElementById("fullbutton").addEventListener("click", function() {
-            TV.active = !TV.active;
-            setClass(document.getElementById("fulltile"), "shown", TV.active);
         });
         
         document.getElementById("install").addEventListener("click", install);
@@ -245,14 +238,12 @@ addEventListener("load", function() {
     }
     function showOverlay() {
         overlay.className = "visible";
-        helpwrapper.className = "up";
         location.hash = "doc";
     }
     if (location.hash.search("doc") !== -1)
         showOverlay();
     
     function hideOverlay() {
-        helpwrapper.className = "";
         overlay.className = "";
         location.hash = "";
     }
