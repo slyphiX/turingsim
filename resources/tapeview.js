@@ -14,7 +14,7 @@ class TapeView {
         this.active = false;
         this.focusHead = true;
         this.focus = 0;
-        this.maxdst = 10; // TODO set this to 100
+        this.maxdst = 20; // TODO set this to 100
         
         var self = this;
         
@@ -47,7 +47,6 @@ class TapeView {
         // TODO start/end
         
         slider.style.width = (rightbound - leftbound + 3) * 40 + "px";
-        
         
         // show one more position
         leftbound--;

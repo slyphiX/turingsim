@@ -60,40 +60,37 @@ class TuringControlMessage {
     }
 }
 
-function TuringControl() {
-    if (!(this instanceof TuringControl))
-        return new TuringControl();
-    
-    // internal
-    this.programming;
-    this.initialTape = "", this.initialOffset = 0;
-    // step delay
-    this.delay;
-    this.timeout;
-    // pseudo-consts
-    this.HALT_STATE = "H";
-    this.INIT_STATE = "1";
-    this.BLANK_SYMBOL = "_";
-    this.DEFAULT_TIMEOUT = 5000;
-    // async worker (init on use)
-    this.skipworker = null;
-    
-    // listeners
-    this.listeners = {};
-    // events
-    this.events = {
-        haltstate: new Event("haltstate"),
-        uiupdate: new Event("uiupdate"),
-        skipdone: new Event("skipdone"),
-        skipinterrupt: new Event("skipinterrupt"),
-        skiptimeout: new Event("skiptimeout")
-    }; // runtimeerror (dynamic event)
-    
-    this.defaults();
-};
+class TuringControl {
+    constructor() {
+        // internal
+        this.programming;
+        this.initialTape = "", this.initialOffset = 0;
+        // step delay
+        this.delay;
+        this.timeout;
+        // pseudo-consts
+        this.HALT_STATE = "H";
+        this.INIT_STATE = "1";
+        this.BLANK_SYMBOL = "_";
+        this.DEFAULT_TIMEOUT = 5000;
+        // async worker (init on use)
+        this.skipworker = null;
 
-TuringControl.prototype = {
-    defaults: function() {
+        // listeners
+        this.listeners = {};
+        // events
+        this.events = {
+            haltstate: new Event("haltstate"),
+            uiupdate: new Event("uiupdate"),
+            skipdone: new Event("skipdone"),
+            skipinterrupt: new Event("skipinterrupt"),
+            skiptimeout: new Event("skiptimeout")
+        }; // runtimeerror (dynamic event)
+
+        this.defaults();
+    }
+
+    defaults() {
         // runtime info
         this.state = this.INIT_STATE;
         this.position = 0;
@@ -116,10 +113,10 @@ TuringControl.prototype = {
             this.setTape(ofst + i, str.charAt(i));
         
         this.dispatchEvent(this.events.uiupdate);
-    },
-
+    }
+    
     // checks if machine activity matches the requirements
-    needs: function(requirements) {
+    needs(requirements) {
         if (typeof requirements.programmed !== "undefined") {
             if (typeof this.programming === "undefined" && requirements.programmed)
                 throw new TuringControlError(8);
@@ -132,21 +129,21 @@ TuringControl.prototype = {
             if (this.haltState && !requirements.haltstate)
                 throw new TuringControlError(11);
         }
-    },
+    }
     
-    getTape: function(index) {
+    getTape(index) {
         return (index < 0 ? this.ltape[~index] : this.rtape[index]) || " ";
-    },
+    }
     
-    setTape: function(index, value) {
+    setTape(index, value) {
         if (index < 0) {
             this.ltape[~index] = value;
         } else {
             this.rtape[index] = value;
         }
-    },
+    }
     
-    start: function() {
+    start() {
         this.needs({ programmed: true, running: false, haltstate: false });
         this.running = true;
         
@@ -162,9 +159,9 @@ TuringControl.prototype = {
             }
         }
         setTimeout(schedule, 0);
-    },
+    }
     
-    halt: function() {
+    halt() {
         this.needs({ running: true });
         if (this.skipping) {
             this.skipworker.postMessage(new TuringControlMessage("stop"));
@@ -174,20 +171,20 @@ TuringControl.prototype = {
             return true;
         }
         return false;
-    },
+    }
     
-    reset: function() {
+    reset() {
         this.needs({ programmed: true, running: false });
         this.defaults();
-    },
+    }
     
-    step: function() {
+    step() {
         this.needs({ programmed: true, running: false, haltstate: false });
         this.transition();
         this.dispatchEvent(this.events.uiupdate);
-    },
+    }
     
-    compute: function() {
+    compute() {
         this.needs({ programmed: true, running: false, haltstate: false });
         
         if (!Worker)
@@ -234,10 +231,10 @@ TuringControl.prototype = {
         this.skipworker.postMessage(new TuringControlMessage("start", {
             status: this.export(true)
         }));
-    },
+    }
     
-    init: function(program, initial, offset) {
-        COMMAND_PATTERN = /^\s*([0-9A-Za-z]{1,3}),([^, ]) +([0-9A-Za-z]{1,3}),([^, ])(?:,([>_<]))?\s*(?:#.*)?$/;
+    init(program, initial, offset) {
+        var COMMAND_PATTERN = /^\s*([0-9A-Za-z]{1,3}),([^, ]) +([0-9A-Za-z]{1,3}),([^, ])(?:,([>_<]))?\s*(?:#.*)?$/;
         
         if (this.running || this.skipping)
             throw new TuringControlError(1);
@@ -315,9 +312,9 @@ TuringControl.prototype = {
         this.initialOffset = offset;
         
         this.defaults();
-    },
+    }
     
-    transition: function() {
+    transition() {
         var char = this.getTape(this.position);
         if (char === " ")
             char = this.BLANK_SYMBOL;
@@ -352,10 +349,10 @@ TuringControl.prototype = {
             this.dispatchEvent(this.events.haltstate);
         }
         return true;
-    },
+    }
     
     // export/import
-    export: function(env) {
+    export(env) {
         var ex = Object.create(null);
         for (let k of this.STATE_LIST)
             ex[k] = this[k];
@@ -363,33 +360,32 @@ TuringControl.prototype = {
             for (let k of this.ENV_LIST)
                 ex[k] = this[k];
         return ex;
-    },
-    import: function(im, env) {
+    }
+    import(im, env) {
         for (let k of this.STATE_LIST)
             this[k] = im[k];
         if (env)
             for (let k of this.ENV_LIST)
                 this[k] = im[k];
-    },
+    }
     
     // event handling
-    addEventListener: function(type, callback) {
+    addEventListener(type, callback) {
         if (!(type in this.listeners))
             this.listeners[type] = [];
         this.listeners[type].push(callback);
-    },
-    removeEventListener: function(type, callback) {
+    }
+    removeEventListener(type, callback) {
         if (type in this.listeners) {
             this.listeners[type].forEach(function(item, i, arr) {
                 if (item === callback)
                     arr.splice(i, 1);
             });
         }
-    },
-    dispatchEvent: function(event) {
+    }
+    dispatchEvent(event) {
         var self = this;
         if (event.type in this.listeners) {
-            event.target = this;
             this.listeners[event.type].forEach(function(item) {
                 item.call(self, event);
             });
@@ -404,5 +400,3 @@ TuringControl.prototype.ENV_LIST =
 TuringControl.prototype.DIRECTION_LEFT = -1;
 TuringControl.prototype.DIRECTION_NONE = 0;
 TuringControl.prototype.DIRECTION_RIGHT = 1;
-
-TuringControl.prototype.constructor = TuringControl;

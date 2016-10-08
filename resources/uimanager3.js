@@ -5,13 +5,13 @@
  * (c) 2016 jh
  */
 
-//onerror = function (m, f, l) {
-//    alert(m + "\nFile: " + f + "\nLine: " + l);
-//};
-
 onerror = function(m) {
     alert("AN ERROR OCCURRED:\n" + m + "\nReload the page to reset.");
 };
+
+//onerror = function (m, f, l) {
+//    alert(m + "\nFile: " + f + "\nLine: " + l);
+//};
 
 addEventListener("load", function() {
     
