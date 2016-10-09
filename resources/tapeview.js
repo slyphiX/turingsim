@@ -14,8 +14,11 @@ class TapeView {
         this.active = false;
         this.focusHead = true;
         this.focus = 0;
-        this.maxdst = 20; // TODO let user decide
+        this.dst = 8;
+        this.MAX_DST = 1e3;
+        this.MIN_DST = 1;
         
+        var DSTFACT = 2;
         var self = this;
         
         this.control.addEventListener("uiupdate", () => self.build());
@@ -26,14 +29,29 @@ class TapeView {
             self.build();
             document.getElementById("fulltile").className = self.active ? "shown" : "";
         });
+        document.getElementById("fulltileplus").addEventListener("click", () => self.scale(DSTFACT));
+        document.getElementById("fulltileminus").addEventListener("click", () => self.scale(1 / DSTFACT));
         
         this.changeFocus();
+        this.build();
+    }
+    scale(factor) {
+        var newdst = this.dst * factor;
+        if (newdst > this.MIN_DST && newdst < this.MAX_DST)
+            this.dst = newdst;
+        
+        var nextdst = this.dst * factor;
+        document.getElementById("fulltileplus").style.visibility =
+                (nextdst < this.MAX_DST) ? "visible" : "hidden";
+        document.getElementById("fulltileminus").style.visibility =
+                (nextdst > this.MIN_DST) ? "visible" : "hidden";
+        
         this.build();
     }
     build() {
         if (!this.active) return;
         
-        while(this.root.lastChild)
+        while (this.root.lastChild)
             this.root.removeChild(this.root.lastChild);
         
         var slider = document.createElement("div");
@@ -41,16 +59,10 @@ class TapeView {
         
         var pos = this.focusHead ? this.control.position : this.focus;
         
-        var leftbound = pos - this.maxdst;
-        var rightbound = pos + this.maxdst;
+        var leftbound = pos - this.dst;
+        var rightbound = pos + this.dst;
         
-        // TODO start/end
-        
-        slider.style.width = (rightbound - leftbound + 3) * 40 + "px";
-        
-        // show one more position
-        leftbound--;
-        rightbound++;
+        slider.style.width = (rightbound - leftbound + 1) * 40 + "px";
         
         for (var i = leftbound; i <= rightbound; i++) {
             var index = i.toString();

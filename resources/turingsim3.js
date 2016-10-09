@@ -95,10 +95,10 @@ class TuringControl {
         this.state = this.INIT_STATE;
         this.position = 0;
         // stats
-        // TODO implement start/end
         this.transitions = 0;
         this.symbols = this.initialTape.replace(/ /g, "").length;
         this.lastDirection = this.DIRECTION_NONE;
+        // unimplemented
         this.tapeStart = 0;
         this.tapeEnd = 0;
         // state

@@ -593,8 +593,8 @@ html, body {
     margin: auto;
 }
 .fulltilebox {
-    padding: 6px;
-    padding-top: 8px;
+    padding: 4px;
+    padding-top: 6px;
     color: white;
     background-color: rgba(255, 255, 255, 0.1);
     font-size: 16px;
@@ -606,7 +606,8 @@ html, body {
     -ms-user-select: none;
 }
 .fulltilebutton {
-    padding: 4px;
+    display: inline-block;
+    padding: 3px 4px;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
@@ -616,6 +617,11 @@ html, body {
 .fulltilebutton:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
+.fulltilebutton.square {
+    width: 16px;
+    text-align: center;
+}
+
 #fulltileinfo {
     float: left;
 }
