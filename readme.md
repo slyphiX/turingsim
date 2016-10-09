@@ -1,10 +1,10 @@
 
-### JavaScript Turing Machine Simulator v3
+### JavaScript Turing Machine Simulator (3rd revision)
 
-[TMS3](https://slyphix.github.io/turingsim/)
+[Take me there!](https://slyphix.github.io/turingsim/)
 
 Basically what the title says. Simulates a simple turing machine for use in education.
-Refer to the [builtin documentation](https://slyphix.github.io/turingsim/#doc) for more information.
+Refer to the [built-in documentation](https://slyphix.github.io/turingsim/#doc) for more information.
 Complete API documentation pending.
 
 #### Highlights
