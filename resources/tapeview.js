@@ -31,6 +31,10 @@ class TapeView {
         });
         document.getElementById("fulltileplus").addEventListener("click", () => self.scale(DSTFACT));
         document.getElementById("fulltileminus").addEventListener("click", () => self.scale(1 / DSTFACT));
+        document.getElementById("fulltapeposform").addEventListener("submit", (e) => {
+            self.changeFocus();
+            e.preventDefault();
+        });
         
         this.changeFocus();
         this.build();
