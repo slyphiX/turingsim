@@ -14,18 +14,20 @@ onerror = function(m) {
 //};
 
 addEventListener("load", function() {
-    
+
     /* CONSTANTS */
-    
+
     var TAPE_SIZE = 25;
     var TAPE_CENTER = Math.floor(TAPE_SIZE / 2);
     var TAPE = [];
     var LOG_LENGTH_THRESHOLD = 8;
-    
+
     var DELAYS = [2000, 1000, 500, 300, 50];
-    
+
+    var TIMEOUT_LIMIT = 30000;
+
     /* DOM ELEMENTS */
-    
+
     var slidebutton = document.getElementById("clearprog");
     var slidebuttonout = document.getElementById("clearout");
     var edited = document.getElementById("editednote");
@@ -37,14 +39,14 @@ addEventListener("load", function() {
     var initialoffset = document.getElementById("initialoffset");
     var speedlist = document.getElementById("speed");
     var slider = document.getElementById("slider");
-    
+
     /* TMS INSTANCE */
     
     var TMS = new TuringControl();
     var TV = new TapeView(TMS);
-    
+
     /* MESSAGES */
-        
+
     var PROGRAMMING_SUCCESS = "Machine programmed successfully.";
     var PROGRAMMING_STARTED = "Programming started...";
     var PROGRAMMING_EMPTY = "No programming entered!";
@@ -57,7 +59,7 @@ addEventListener("load", function() {
     var HALT_TIMEOUT = HALT + "Computation time limit exceeded.";
     
     /* METHODS */
-        
+
     function init() {
         // set listeners
         program.addEventListener("input", updateProgramSlide);
@@ -139,13 +141,55 @@ addEventListener("load", function() {
             message(PROGRAMMING_STARTED);
             if (!program.value)
                 throw new Error(PROGRAMMING_EMPTY);
-            TMS.init(program.value, initial.value, initialoffset.value);
+            
+            var env = envsave();
+            var prog = envparse(program.value);
+
+            TMS.init(prog, initial.value, initialoffset.value);
             message(PROGRAMMING_SUCCESS);
+            
             lastInstalled = program.value;
             updateProgramSlide();
         } catch (e) {
+            envload(env);
             message("ERROR: " + e.message + "\nProgramming cancelled.");
         }
+    }
+    
+    // environment directive extraction
+    function envparse(code) {
+        var ed = {};
+        function extract(match, key, value) {
+            if (ed[key])
+                throw new Error("." + key + " is already defined!");
+            ed[key] = value;
+            return "\n";
+        }
+        
+        var firstcommand = code.match(/^(\s*(?:[.#].*)?\r?\n)*/)[0].length;
+        
+        directives = code.substring(0, firstcommand)
+                         .replace(/^\s*\.(halt|init)\s*([0-9A-Za-z]{1,3})\s*$/gm, extract)
+                         .replace(/^\s*\.(blank)\s*([^, ])\s*$/gm, extract);
+        
+        TMS.INIT_STATE = ed.init || DEFAULT_ENV.INIT_STATE;
+        TMS.HALT_STATE = ed.halt || DEFAULT_ENV.HALT_STATE;
+        TMS.BLANK_SYMBOL = ed.blank || DEFAULT_ENV.BLANK_SYMBOL;
+        
+        return directives + code.substring(firstcommand);
+    }
+    
+    var DEFAULT_ENV = envsave();
+    function envsave() {
+        var save = { INIT_STATE: null, HALT_STATE: null, BLANK_SYMBOL: null };
+        for (var key in save)
+            save[key] = TMS[key];
+        return save;
+    }
+    
+    function envload(env) {
+        for (var key in env)
+            TMS[key] = env[key];
     }
     
     function start() {

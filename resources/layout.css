@@ -42,7 +42,7 @@ html, body {
     margin: 15px auto 10px;
 }
 #uppercontainer {
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 #lowercontainer {
     margin-top: 25px;
@@ -154,7 +154,7 @@ html, body {
     right: 0;
     height: 40px;
     width: 40px;
-    border: 5px solid #c62222;
+    border: 5px solid #c80000;
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.1);
     box-shadow: 2px 0 1px rgba(0, 0, 0, 0.4), -2px 0 1px rgba(0, 0, 0, 0.4), 1px 1px 1px rgba(0, 0, 0, 0.4) inset, -1px -1px 1px rgba(0, 0, 0, 0.4) inset;
@@ -548,33 +548,6 @@ html, body {
     background-position: 0 center;
 }
 
-#fullbutton {
-    box-sizing: border-box;
-    margin: auto;
-    height: 25px;
-    margin: auto;
-    margin-top: 5px;
-    padding: 2px;
-    padding-left: 30px;
-    text-align: left;
-    line-height: 20px;
-    font-size: 13px;
-    font-weight: bold;
-    background-color: #45545E;
-    background-image: url(tape.png);
-    background-position: center left;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.2s;
-}
-#fullbutton:hover {
-    background-color: #2A2A35;
-}
-
 #fulltile {
     width: 100%;
     height: 0;
@@ -778,4 +751,43 @@ html, body {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.2s linear, visibility 0.2s step-start;
+}
+
+#fullbutton {
+    position: relative;
+    width: 60px;
+    height: 25px;
+    margin: 0 auto;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    transition: background-color 0.2s;
+}
+#fullbutton:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 90;
+    background-image: url(dualarr.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 0.2s;
+}
+#fullbutton:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+#fullbutton.active:before {
+    -webkit-transform: rotate(-180deg);
+    -moz-transform: rotate(-180deg);
+    -ms-transform: rotate(-180deg);
+    -o-transform: rotate(-180deg);
+    transform: rotate(-180deg);
 }

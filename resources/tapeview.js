@@ -28,6 +28,7 @@ class TapeView {
             self.active = !self.active;
             self.build();
             document.getElementById("fulltile").className = self.active ? "shown" : "";
+            document.getElementById("fullbutton").className = self.active ? "active" : "";
         });
         document.getElementById("fulltileplus").addEventListener("click", () => self.scale(DSTFACT));
         document.getElementById("fulltileminus").addEventListener("click", () => self.scale(1 / DSTFACT));

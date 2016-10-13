@@ -51,7 +51,7 @@ this.addEventListener("message", function(e) {
                 worker.close();
             }
             // taking too long
-            else if (Date.now() - start > TMS.DEFAULT_TIMEOUT) {
+            else if (Date.now() - start > TMS.COMPUTE_TIMEOUT) {
                 worker.postMessage(new TuringControlMessage("timeout", {
                     status: TMS.export()
                 }));

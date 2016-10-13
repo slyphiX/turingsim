@@ -32,7 +32,7 @@ class TuringControlError extends Error {
     static recreate(backup) {
         return new TuringControlError(backup.id, backup.info);
     }
-}
+};
 TuringControlError.prototype.DEFAULT_ERRORS = {
     1: "Cannot install program while running!",
     2: "Syntax error in line {line}.",
@@ -58,7 +58,7 @@ class TuringControlMessage {
             this.error = info.error || null;
         }
     }
-}
+};
 
 class TuringControl {
     constructor() {
@@ -72,7 +72,7 @@ class TuringControl {
         this.HALT_STATE = "H";
         this.INIT_STATE = "1";
         this.BLANK_SYMBOL = "_";
-        this.DEFAULT_TIMEOUT = 5000;
+        this.COMPUTE_TIMEOUT = 5000;
         // async worker (init on use)
         this.skipworker = null;
 
@@ -297,11 +297,10 @@ class TuringControl {
         
         // check for calls to undefined states
         var definedStates = Object.keys(programming);
-        var haltState = this.HALT_STATE;
-        calledStates.forEach(function(state) {
-            if (definedStates.indexOf(state) === -1 && state !== haltState)
+        for (var state of calledStates) {
+            if (definedStates.indexOf(state) === -1 && state !== this.HALT_STATE)
                 throw new TuringControlError(6, { state: state, line: calledByLine[state] });
-        });
+        }
         
         if (definedStates.indexOf(this.INIT_STATE) === -1)
             throw new TuringControlError(7, { state: this.INIT_STATE });
@@ -391,12 +390,11 @@ class TuringControl {
             });
         }
     }
-    
 };
 TuringControl.prototype.STATE_LIST =
         ["state", "position", "transitions", "symbols", "lastDirection", "tapeStart", "tapeEnd", "ltape", "rtape"];
 TuringControl.prototype.ENV_LIST =
-        ["programming", "initialTape", "initialOffset", "HALT_STATE", "INIT_STATE", "BLANK_SYMBOL", "DEFAULT_TIMEOUT"];
+        ["programming", "initialTape", "initialOffset", "HALT_STATE", "INIT_STATE", "BLANK_SYMBOL", "COMPUTE_TIMEOUT"];
 TuringControl.prototype.DIRECTION_LEFT = -1;
 TuringControl.prototype.DIRECTION_NONE = 0;
 TuringControl.prototype.DIRECTION_RIGHT = 1;
