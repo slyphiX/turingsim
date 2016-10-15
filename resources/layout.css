@@ -327,6 +327,7 @@ html, body {
     border-top-left-radius: 5px;
     height: 25px;
     width: 25px;
+    line-height: 38px;
     background-color: rgba(0, 0, 0, 0.8);
     font-weight: bold;
     font-size: 32px;
