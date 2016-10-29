@@ -12,4 +12,4 @@ Complete API documentation pending.
 - Uses JavaScript's built-in event system
 - Uses WebWorkers for concurrent calculations
 - Allows multiple independent instances
-- UI completely interchangable
+- UI completely interchangeable
