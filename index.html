@@ -30,7 +30,7 @@
                     <div class="statusdesc shadow">TRANSITIONS</div>
                 </div>
             </div>
-            
+
             <div id="tape" class="wide">
                 <div id="rightindicator" class="indicator"></div>
                 <div id="leftindicator" class="indicator"></div>
@@ -41,7 +41,7 @@
             </div>
             <div id="fullbutton" title="TapeViewer on/off"></div>
         </div>
-        
+
         <div id="fulltile">
             <div id="fulltilewrapper">
                 <div id="fulltileinfo" class="fulltilebox">
@@ -58,30 +58,30 @@
             </div>
             <div id="fulltape"></div>
         </div>
-            
+
         <div class="container" id="lowercontainer">
             <div id="programtile" class="shadow narrow sidetile">
                 <div class="heading">Programming</div>
-                
+
                 <div id="confirmoverlay">
                     <span id="clear" class="flatbutton">Clear Programming</span><br>
                     <span id="cancel" class="flatbutton">Cancel</span>
                 </div>
-                
+
                 <div id="clearprog" class="slidebutton">
                     Clear Programming
                 </div>
-                
+
                 <div id="editednote" title="The currently entered program might not match the installed one.">*</div>
-                
+
                 <div class="wrapper">
                     <textarea id="program"></textarea>
                 </div>
             </div>
-            
+
             <div id="outputtile" class="shadow narrow sidetile">
                 <div class="heading">Output</div>
-                
+
                 <div id="clearout" class="slidebutton">
                     Clear Output Box
                 </div>
@@ -94,15 +94,15 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="controltile" class="shadow narrow">
                 <div class="heading">Controls</div>
-                
+
                 <div class="buttonbox"><div class="button" id="start" title="Start"></div><br>Start</div>
                 <div class="buttonbox"><div class="button" id="halt" title="Halt"></div><br>Halt</div>
                 <div class="buttonbox"><div class="button" id="reset" title="Reset"></div><br>Reset</div>
                 <div class="buttonbox"><div class="button" id="step" title="Single Step"></div><br>Step</div>
-                
+
                 <div id="listbox">
                     <select id="speed" size="1">
                         <option>Very Slow</option>
@@ -115,7 +115,7 @@
                 </div>
                 <div class="buttonbox"><div class="button" id="calc" title="Compute"></div><br>Skip</div>
             </div>
-            
+
             <div id="setuptile" class="shadow narrow">
                 <div class="heading">Setup</div>
 
@@ -124,7 +124,7 @@
                     <input type="text" id="initialoffset" class="textfield" placeholder="OFFSET" value="0">
                     <input type="text" id="initial" class="textfield">
                 </div>
-                
+
                 <div id="installbox">
                     <div id="install" class="button">
                         Install program
@@ -212,7 +212,7 @@
                         <p>Similar to above. Occurs when a transition rule tries to specify any actions for state <code>H</code>. <code>H</code>
                         denotes the halt state and is therefore already defined. Remove any rules for state <code>H</code> or
                         rename the affected state if this was unintended. Note that since state names are case-sensitive,
-                        <code>H</code> and <code>h</code> describe describe different states.</p>
+                        <code>H</code> and <code>h</code> describe different states.</p>
                     <h3>Potential call to undefined state</h3>
                         <p>Occurs when a transition rule tries to define a transition into an undefined state. Check if any
                         transition rules for the state to be transitioned into exist or try changing the rule in the specified line to
