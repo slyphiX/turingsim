@@ -261,9 +261,9 @@ class TuringControl {
             if (!match)
                 throw new TuringControlError(2, { line: l + 1 });
             
-            var state = match[1].replace(/^0{0,2}/, ""); // leading zeroes
+            var state = match[1].replace(/^0{0,2}(\d)/, "$1"); // leading zeros
             var char = match[2];
-            var targetState = match[3].replace(/^0{0,2}/, "");
+            var targetState = match[3].replace(/^0{0,2}(\d)/, "$1");
             var newChar = match[4];
             var dirChar = match[5] || "_";
             var direction = (dirChar === ">") ? this.DIRECTION_RIGHT :

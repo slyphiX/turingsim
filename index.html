@@ -200,12 +200,12 @@
                     <h2>Error reference</h2>
                     <h3>No applicable transition found</h3>
                         <p>Occurs during runtime when no transition is defined for the current state and symbol. Check if any transition rule
-                        is missing or if the current constellation should not have been reached in the first place.</p>
+                        is missing or if the current state should not have been reached in the first place.</p>
                     <h3>Syntax error</h3>
                         <p>Occurs when a transition rule does not satisfy the above syntax rules. Check the specified line for typos
                         or differences to the syntax explained above.</p>
                     <h3>Trying to override existing state transition</h3>
-                        <p>Occurs when a transition rule for given state-character constellation has already previously been defined.
+                        <p>Occurs when a transition rule for given state-character combination has already previously been defined.
                         This is supposed to prevent ambiguity and unintended behavior. Check the specified line and the lines above it
                         for any multiple definitions.</p>
                     <h3>Attempting to override halt state</h3>
